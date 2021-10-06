@@ -1,0 +1,19 @@
+{
+  "name": "njinz",
+  "version": "0.0.1",
+  "scripts": {
+    "lint": "eslint '**/*.ts'",
+    "check-types": "tsc --noEmit",
+    "test": "deno -- tests.ts"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^1.10.2",
+    "@typescript-eslint/parser": "^1.10.2",
+    "eslint": "^5.16.0",
+    "eslint-config-prettier": "^5.0.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "prettier": "^1.18.2",
+    "typescript": "^3.5.2"
+  },
+  "license": "MIT"
+}
