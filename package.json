@@ -4,7 +4,8 @@
   "scripts": {
     "lint": "eslint '**/*.ts'",
     "check-types": "tsc --noEmit",
-    "test": "deno -- tests.ts"
+    "test": "deno -- tests.ts",
+    "dev": "denon run --allow-read --allow-net src/webserver.ts"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^1.10.2",

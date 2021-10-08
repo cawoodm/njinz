@@ -1,0 +1,28 @@
+{
+  "hosts": [
+    {
+      "host": "http://localhost:80",
+      "ruleSets": [
+        "main"
+      ]
+    }
+  ],
+  "ruleSets": {
+    "main": {
+      "rules": [
+        {
+          "when": "/ping",
+          "then": {
+            "static": "Pong!"
+          }
+        },
+        {
+          "when": "/",
+          "then": {
+            "proxy": "https://github.com/asos-craigmorten/opine-http-proxy"
+          }
+        }
+      ]
+    }
+  }
+}

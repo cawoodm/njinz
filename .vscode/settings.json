@@ -1,5 +1,4 @@
 {
-  "eslint.autoFixOnSave": true,
   "eslint.options": {
     "extensions": [
       ".js",
@@ -11,14 +10,8 @@
   "eslint.validate": [
     "javascript",
     "javascriptreact",
-    {
-      "language": "typescript",
-      "autoFix": true
-    },
-    {
-      "language": "typescriptreact",
-      "autoFix": true
-    }
+    "typescript",
+    "typescriptreact",
   ],
   "eslint.alwaysShowStatus": true,
   "editor.formatOnSave": true,
@@ -29,10 +22,10 @@
     "editor.formatOnSave": false
   },
   "[typescript]": {
-    "editor.formatOnSave": false
+    "editor.formatOnSave": true
   },
   "[typescriptreact]": {
-    "editor.formatOnSave": false
+    "editor.formatOnSave": true
   },
   "prettier.eslintIntegration": true,
   "typescript.tsdk": "node_modules/typescript/lib",
@@ -41,5 +34,8 @@
   "deno.packageManager": "yarn",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
+  },
+  "deno.suggest.imports.hosts": {
+    "https://deno.land": true
   }
 }

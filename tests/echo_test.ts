@@ -1,4 +1,4 @@
-import { echo } from "./echo.ts";
+import { echo } from "../src/echo.ts";
 import { assertEquals } from "https://deno.land/std@0.100.0/testing/asserts.ts";
 
 Deno.test("Adding Works", () => {
