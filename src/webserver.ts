@@ -23,12 +23,9 @@ const njinz: VServer = {
 };
 
 //* Configuration Loader
+let configFile = new URL("../config.json", import.meta.url).pathname;
 try {
-  const configFile = new URL("../config.json", import.meta.url).pathname;
-  //.replace(/^\//, ''); // Windows leading / hack
-  console.log("--------------")
-  console.log(configFile);
-  console.log("--------------")
+  if (configFile.match(/^\/\S:/)) configFile = configFile.replace(/^\//, ""); // Windows leading / hack
   const config: Config = JSON.parse(Deno.readTextFileSync(configFile));
   config.hosts.forEach((host: Host) => {
     let vhost: HostDetail = URL2VHost(host.host);
@@ -45,7 +42,7 @@ try {
   });
 } catch (e) {
   console.trace(e);
-  console.error("Invalid config: ", e.message);
+  console.error("Invalid config: ", configFile, e.message);
   Deno.exit(1);
 }
 //* Server Runtime
