@@ -1,44 +1,47 @@
 import { Application } from "https://deno.land/x/opine@1.8.0/src/types.ts";
-export type {
-
-  TNJINZ,
-  TConfig,
-  THostDetail,
-  TVHost,
-  TVPort,
-  THost,
-  TRuleSet,
+export type { Config, Host, HostDetail, RuleSet, VHost, VPort, VServer };
+interface Config {
+  hosts: Host[];
+  ruleSets: RuleSetsMap;
 }
-interface TConfig {
-  hosts: THost[],
-  ruleSets:  {[key: string]: TRuleSetConfig[]},
-  //ruleSets:  Map<string, TRuleSetConfig[]>,
+interface VServer {
+  vports: VPort[];
+  vhosts: VHost[];
 }
-interface TRuleSetConfig {
-  when: string,
-  then: any
+interface RuleSetsMap {
+  [key: string]: RuleSetConfig;
 }
-interface TNJINZ {
-  vports: TVPort[],
-  vhosts: TVHost[],
+interface RuleSetConfig {
+  mode?: HandlerMode;
+  rules: Rule[];
 }
-interface TVPort {
-  number: number,
-  app: Application
+interface RuleSet {
+  mode?: HandlerMode;
+  rules: Rule[];
 }
-interface TRuleSet {
+interface Rule {
+  when: string;
+  then: any;
 }
-interface THost {
-  host: string,
-  ruleSets: string[]
+interface Host {
+  host: string;
+  ruleSets: string[];
 }
-interface TVHost {
-  host:THostDetail,
-  ruleSets: TRuleSet[],
+interface VPort {
+  number: number;
+  app: Application;
 }
-interface THostDetail {
-  origin: string,
-  protocol: string,
-  host: string,
-  port: number,
+interface VHost {
+  host: HostDetail;
+  ruleSets: RuleSet[];
+}
+interface HostDetail {
+  origin: string;
+  protocol: string;
+  host: string;
+  port: number;
+}
+enum HandlerMode {
+  all = 0,
+  any = 1,
 }

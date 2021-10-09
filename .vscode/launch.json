@@ -11,6 +11,9 @@
       "program": "${workspaceFolder}/src/webserver.ts",
       "cwd": "${workspaceFolder}",
       "runtimeExecutable": "C:\\Users\\u29730\\.deno\\bin\\deno.EXE",
+      "env": {
+        "DEBUG_PORT_OVERRIDE": "8887"
+      },
       "runtimeArgs": [
         "run",
         "--inspect",

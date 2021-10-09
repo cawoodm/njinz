@@ -1,15 +1,12 @@
-
-
 import { opine } from "https://deno.land/x/opine@1.8.0/mod.ts";
-import { urlParse } from 'https://deno.land/x/url_parse@1.0.0/mod.ts';
-import type {TNJINZ, THostDetail} from './types.ts';
-// import { TNJINZ } from '../../../C:/Marc/work/njinz/types.ts'
+import { urlParse } from "https://deno.land/x/url_parse@1.0.0/mod.ts";
+import type { HostDetail, VServer } from "./types.ts";
+// import { VServer } from '../../../C:/Marc/work/njinz/types.ts'
 
-
-const njinz: TNJINZ = {
+const njinz: VServer = {
   ports: [],
   vhosts: [],
-  ruleSets: []
+  ruleSets: [],
 };
 
 const config = {
@@ -17,9 +14,9 @@ const config = {
     {
       "host": "http://localhost:80",
       "ruleSets": [
-        "main"
-      ]
-    }
+        "main",
+      ],
+    },
   ],
   "ruleSets": {
     "main": {
@@ -27,29 +24,28 @@ const config = {
         {
           "when": "/ping",
           "then": {
-            "static": "Pong!"
-          }
+            "static": "Pong!",
+          },
         },
         {
           "when": "/",
           "then": {
-            "proxy": "https://github.com/asos-craigmorten/opine-http-proxy"
-          }
+            "proxy": "https://github.com/asos-craigmorten/opine-http-proxy",
+          },
         },
-      ]
-    }
-  }
-}
+      ],
+    },
+  },
+};
 
-config.hosts.forEach(host => {
-  let vhost: THostDetail = URL2VHost(host.host);
-  if (njinz.ports.indexOf(vhost.port)<0) njinz.ports.push(vhost.port);
+config.hosts.forEach((host) => {
+  let vhost: HostDetail = URL2VHost(host.host);
+  if (njinz.ports.indexOf(vhost.port) < 0) njinz.ports.push(vhost.port);
   njinz.vhosts.push({
     host: vhost,
     ruleSets: host.ruleSets,
   });
 });
-
 
 const app = opine();
 app.get("/", function (req, res) {
@@ -60,19 +56,19 @@ app.listen(
   () => console.log("server has started on http://localhost:3000 🚀"),
 );
 
-function URL2VHost(url: string): THostDetail {
+function URL2VHost(url: string): HostDetail {
   try {
-
     let uri = urlParse(url);
-    if (uri.protocol === 'https:') throw new Error("NJINZ-100: HTTPS not yet supported!")
+    if (uri.protocol === "https:") {
+      throw new Error("NJINZ-100: HTTPS not yet supported!");
+    }
     return {
       origin: uri.origin,
       protocol: uri.protocol,
       host: uri.host,
       port: parseInt(uri.port) || 80,
-    }
+    };
   } catch (e) {
-    throw new Error("NJINZ-101: Invalid host name in config: " + e.message)
+    throw new Error("NJINZ-101: Invalid host name in config: " + e.message);
   }
 }
-
