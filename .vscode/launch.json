@@ -20,6 +20,23 @@
         "--allow-all"
       ],
       "attachSimplePort": 9229
+    },
+    {
+      "request": "launch",
+      "name": "Debug *NIX",
+      "type": "pwa-node",
+      "program": "${workspaceFolder}/src/webserver.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "/home/u29730/.deno/bin/deno",
+      "env": {
+        "DEBUG_PORT_OVERRIDE": "8887"
+      },
+      "runtimeArgs": [
+        "run",
+        "--inspect",
+        "--allow-all"
+      ],
+      "attachSimplePort": 9229
     }
   ]
 }

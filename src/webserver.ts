@@ -8,7 +8,14 @@ import {
   response,
 } from "https://deno.land/x/opine@1.8.0/mod.ts";
 import { urlParse } from "https://deno.land/x/url_parse@1.0.0/mod.ts";
-import { Config, Host, HostDetail, RuleSet, VPort, VServer } from "./types.ts";
+import type {
+  Config,
+  Host,
+  HostDetail,
+  RuleSet,
+  VPort,
+  VServer,
+} from "./types.ts";
 
 const njinz: VServer = {
   vports: [],
@@ -17,10 +24,12 @@ const njinz: VServer = {
 
 //* Configuration Loader
 try {
-  const configFile = new URL("../config.json", import.meta.url).pathname
-    .substring(1);
+  const configFile = new URL("../config.json", import.meta.url).pathname;
+  //.replace(/^\//, ''); // Windows leading / hack
+  console.log("--------------")
+  console.log(configFile);
+  console.log("--------------")
   const config: Config = JSON.parse(Deno.readTextFileSync(configFile));
-
   config.hosts.forEach((host: Host) => {
     let vhost: HostDetail = URL2VHost(host.host);
     if (!njinz.vports.find((vp) => vp.number === vhost.port)) {
@@ -90,7 +99,7 @@ function extractRuleSets(config: Config, host: Host): RuleSet[] {
       (k) => k === rs,
     );
     if (!ruleSetName) {
-      throw new Error(`NJINZ:103 Ruleset '${rs}' reference not found!`);
+      throw new Error(`NJINZ-103: Ruleset '${rs}' reference not found!`);
     }
     return <RuleSet> { rules: config.ruleSets[rs].rules };
   });
