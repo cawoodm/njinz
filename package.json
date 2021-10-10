@@ -2,7 +2,7 @@
   "name": "njinz",
   "version": "0.0.1",
   "scripts": {
-    "dev": "denon run --allow-read --allow-net --allow-env src/webserver.ts -f config2.json",
+    "dev": "denon run --allow-read --allow-net --allow-env src/webserver.ts -f config.json",
     "lint": "eslint '**/*.ts'",
     "check-types": "tsc --noEmit",
     "test": "deno -- tests.ts"

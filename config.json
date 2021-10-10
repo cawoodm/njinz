@@ -17,6 +17,12 @@
           }
         },
         {
+          "when": "equals::/pingo",
+          "then": {
+            "static": "Pongo!"
+          }
+        },
+        {
           "when": "/",
           "then": {
             "proxy": "https://github.com/asos-craigmorten/opine-http-proxy"

@@ -4,7 +4,7 @@ import {
   Response,
 } from "https://deno.land/x/opine@1.8.0/src/types.ts";
 import { VPort, VServer } from "./types.ts";
-import { die } from "./helpers.ts";
+import { die, trace } from "./helpers.ts";
 
 export function runServer(njinz: VServer): void {
   try {
@@ -20,7 +20,8 @@ export function runServer(njinz: VServer): void {
             //op.push("RuleSets: " + vhost?.ruleSets.length);
             for (let ruleSet of vhost?.ruleSets) {
               for (let rule of ruleSet.rules) {
-                if (!rule.when || req.path === rule.when) {
+                if (!rule.when || rule.when.check(req) === true) {
+                  // TODO: If mode==any, exit ruleSet!
                   if (rule.then.static) {
                     op.push(rule.then.static);
                   }
@@ -30,7 +31,7 @@ export function runServer(njinz: VServer): void {
           }
           res.send(op.join("<br>"));
         } catch (e) {
-          console.trace(e);
+          trace(e);
           console.error(e);
         }
       });
@@ -46,7 +47,7 @@ export function runServer(njinz: VServer): void {
       );
     });
   } catch (e) {
-    console.trace(e);
+    trace(e);
     console.error("Invalid config: ", e.message);
     Deno.exit(1);
   }

@@ -10,16 +10,22 @@
       "type": "pwa-node",
       "program": "${workspaceFolder}/src/webserver.ts",
       "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "C:\\Users\\u29730\\.deno\\bin\\deno.EXE",
+      "runtimeExecutable": "deno",
       "env": {
-        "DEBUG_PORT_OVERRIDE": "8887"
+        "DEBUG_PORT_OVERRIDE": "8887",
+        "DEBUG_MODE": "true"
       },
       "runtimeArgs": [
         "run",
         "--inspect",
-        "--allow-all"
+        "--allow-all",
       ],
-      "attachSimplePort": 9229
+      "args": [
+        "-f",
+        "config2.json"
+      ],
+      "attachSimplePort": 9229,
+      "redirectOutput": false
     },
     {
       "request": "launch",
@@ -34,7 +40,8 @@
       "runtimeArgs": [
         "run",
         "--inspect",
-        "--allow-all"
+        "--allow-all",
+        "-f config2.json"
       ],
       "attachSimplePort": 9229
     }

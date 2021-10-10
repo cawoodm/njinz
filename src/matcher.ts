@@ -1,41 +1,56 @@
 import { Request } from "https://deno.land/x/opine@1.8.0/src/types.ts";
-import { existsSync } from "https://deno.land/std@0.110.0/fs/mod.ts";
+import { existsSync } from "https://deno.land/std@0.110.0/fs/exists.ts";
 
-class Matcher {
-  _function: Function | null;
-  _func: string;
-  _object: string;
-  _params: string;
+export class Matcher {
+  #function: Function;
+  #funcname: string;
+  #funcPath: string;
+  #object: string;
+  #params: string;
   constructor(params: string) {
+    // Parse <function?>:<object?>:<params>
     let parms = params.split(":");
     if (parms.length === 0) {
       throw new Error(`NJINZ-104: Invalid matcher '${params}'!`);
     }
-    if (parms.length < 2) parms.splice(0, 0, "match");
-    if (parms.length < 3) parms.splice(0, 0, "req.path");
+    if (parms.length < 2) parms.splice(0, 0, "");
+    if (parms.length < 3) parms.splice(0, 0, "");
 
-    this._func = parms[0];
-    this._object = parms[1];
-    this._params = parms[2];
+    this.#funcname = parms[0] ||= "match";
+    this.#object = parms[1] ||= "req.path";
+    this.#params = parms[2];
+    // TODO: Support pseudo-regex
+    // TODO: Support array of params sep=|
+    // TODO: Support hashmap of params sep=&
 
-    if (this._func) {
-      this._func = `lib/sys/${this._func}.js`;
-      if (!existsSync(this._func)) {
-        throw new Error(
-          `NJINZ-105: Custom matcher '${params}' not found at '${this._func}'!`,
-        );
+    this.#function = (o: string, p: string) =>
+      o.toString().match(new RegExp(p));
+    this.#funcPath = "";
+    if (this.#funcname) {
+      if (this.#funcname === "match") {
+        // Standard matcher
+      } else {
+        this.#funcPath = `plugins/matchers/${this.#funcname}.js`;
+        if (!existsSync(this.#funcPath)) {
+          this.#funcPath = "";
+          throw new Error(
+            `NJINZ-105: Custom matcher for '${params}' not found at '${this.#funcPath}'!`,
+          );
+        }
       }
     }
-    this._function = (o: string, p: string) =>
-      o.toString().match(new RegExp(p));
   }
-  async run(req: Request) {
-    if (this._func && !this._function) {
-      this._function = await import(this._func);
+  async init() {
+    // Have to initialize
+    if (this.#funcPath) {
+      let checker = await import(this.#funcPath);
+      this.#function = (obj: any) => checker(obj, this.#params);
     }
-    if (this._function) {
-      return !!this._function(eval(this._object), this._params);
+  }
+  check(req: Request): boolean {
+    if (this.#function) {
+      return !!this.#function(eval(this.#object), this.#params);
     }
-    throw new Error("NJINZ-106: No matcher available!");
+    throw new Error("NJINZ-106: No matcher function available!");
   }
 }
