@@ -12,7 +12,7 @@ export interface RuleSetsMap {
   [key: string]: RuleSetConfig;
 }
 export interface RuleSetConfig {
-  mode?: HandlerMode;
+  mode?: string;
   rules: Rule[];
 }
 export interface VRuleSet {
@@ -45,7 +45,7 @@ export interface HostDetail {
   host: string;
   port: number;
 }
-enum HandlerMode {
+export enum HandlerMode {
   all = 0,
   any = 1,
 }

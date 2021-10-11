@@ -6,6 +6,7 @@ import type { Config, Host, HostDetail, Rule } from "./types.ts";
 import type { VRule, VRuleSet, VServer } from "./types.ts";
 import { Matcher } from "./matcher.ts";
 import { debug, trace } from "./helpers.ts";
+import { parse as parseYAML } from "https://deno.land/std@0.110.0/encoding/yaml.ts";
 
 export async function loadServerConfig(args: string[]): Promise<VServer> {
   let configFile: string = "config.json";
@@ -13,9 +14,9 @@ export async function loadServerConfig(args: string[]): Promise<VServer> {
   try {
     let commandLine = parse(args);
     configFile = commandLine.f || configFile;
-    debug("****ConfigFile", configFile);
+    debug("*** ConfigFile", configFile);
     if (configFile.match(/^\/\S:/)) configFile = configFile.replace(/^\//, ""); // Windows leading / hack
-    config = JSON.parse(Deno.readTextFileSync(configFile));
+    config = load(configFile);
   } catch (e) {
     trace(e);
     console.error("Error parsing config file:", configFile, e.message);
@@ -57,6 +58,17 @@ export async function loadServerConfig(args: string[]): Promise<VServer> {
   }
 }
 
+function load(filename: string): Config {
+  if (filename.match(/\.json$/)) {
+    return <Config> JSON.parse(Deno.readTextFileSync(filename));
+  } else if (filename.match(/\.ya?ml$/)) {
+    return <Config> parseYAML(Deno.readTextFileSync(filename));
+  } else {
+    throw new Error(
+      `NJINZ-107: Unknown file type '${filename}. Only .json/.yaml is supported!`,
+    );
+  }
+}
 function extractRuleSets(config: Config, host: Host): VRuleSet[] {
   let result: VRuleSet[] = host.ruleSets.map((rs) => {
     let ruleSetName: string | undefined = Object.keys(config.ruleSets).find(
@@ -65,8 +77,12 @@ function extractRuleSets(config: Config, host: Host): VRuleSet[] {
     if (!ruleSetName) {
       throw new Error(`NJINZ-103: Ruleset '${rs}' reference not found!`);
     }
-    let rules = extractVRules(config.ruleSets[rs].rules);
-    return <VRuleSet> { rules };
+    let ruleSet = config.ruleSets[rs];
+    let rules = extractVRules(ruleSet.rules);
+    return <VRuleSet> {
+      mode: ruleSet.mode === "any" ? 1 : 0,
+      rules,
+    };
   });
   return result;
 }

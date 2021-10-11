@@ -3,17 +3,24 @@
     {
       "host": "http://localhost:8887",
       "ruleSets": [
-        "main"
+        "routes"
       ]
     }
   ],
   "ruleSets": {
-    "main": {
+    "routes": {
+      "mode": "any",
       "rules": [
         {
           "when": "/ping",
           "then": {
             "static": "Pong2!"
+          }
+        },
+        {
+          "when": "regex::^/ui",
+          "then": {
+            "static": "UI!"
           }
         },
         {

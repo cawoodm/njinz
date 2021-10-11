@@ -3,16 +3,21 @@ import {
   Request,
   Response,
 } from "https://deno.land/x/opine@1.8.0/src/types.ts";
-import { VPort, VServer } from "./types.ts";
+import { HandlerMode, VPort, VServer } from "./types.ts";
+import { Logger } from "./logger.ts";
 import { die, trace } from "./helpers.ts";
 
-export function runServer(njinz: VServer): void {
+export function runServer(njinz: VServer, logger: Logger): void {
   try {
     njinz.vports.forEach((vport: VPort) => {
-      vport.app.all("*", (req: Request, res: Response) => {
+      vport.app.all("*", (req: Request, res: Response, next) => {
         try {
           let vhost = njinz.vhosts.find((vh) => vh.host.port === vport.number);
-          if (!vhost || !vhost.host) die("Unknown Virtual Host");
+          if (!vhost || !vhost.host) {
+            logger.logError(req, "Unknown Virtual Host");
+            return next();
+          }
+          logger.logStart(req);
           let op = []; // "<h1>Hello World</h1>"];
           //op.push("Port: " + vport.number);
           //op.push("Host: " + vhost?.host?.origin);
@@ -21,15 +26,19 @@ export function runServer(njinz: VServer): void {
             for (let ruleSet of vhost?.ruleSets) {
               for (let rule of ruleSet.rules) {
                 if (!rule.when || rule.when.check(req) === true) {
-                  // TODO: If mode==any, exit ruleSet!
                   if (rule.then.static) {
                     op.push(rule.then.static);
+                  }
+                  // TODO: If mode==any, exit ruleSet!
+                  if (ruleSet.mode === HandlerMode.any) {
+                    break;
                   }
                 }
               }
             }
           }
-          res.send(op.join("<br>"));
+          res.send(op.join(""));
+          logger.logEnd(req, res);
         } catch (e) {
           trace(e);
           console.error(e);
