@@ -4,7 +4,6 @@ global:
     errdocs: /etc/injinz/errdocs
     htdocs: /etc/injinz/htdocs
     cache: /etc/injinz/cache
-    foo: bar
 hosts:
   - host: 'http://localhost:8889'
     ruleSets:
@@ -13,16 +12,16 @@ ruleSets:
   routes:
     mode: any
     rules:
+      - when: 'equals::/pingo'
+        then:
+          static: Pongo!
       - when: /ping
         then:
           static: Pong!
       - when: 'regex::^/ui'
         then:
           static: UI!
-      - when: 'equals::/pingo'
-        then:
-          static: Pongo!
-      - when: /
+      - when: /app1
         then:
           proxy: 'https://github.com/asos-craigmorten/opine-http-proxy'
       - when: /

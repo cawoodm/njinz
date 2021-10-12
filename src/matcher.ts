@@ -8,6 +8,7 @@ export class Matcher {
   #funcPath: string;
   #object: string;
   #params: string;
+  #MATCHER_ROOT: string = "etc/injinz/plugins/matchers";
   constructor(params: string) {
     // Parse <function?>:<object?>:<params>
     // Parse <object?>:<params>
@@ -35,12 +36,12 @@ export class Matcher {
         let params = new RegExp(this.#params);
         this.#function = (o: any) => o.toString().match(params);
       } else {
-        this.#funcPath = `plugins/matchers/${this.#funcname}.js`;
+        this.#funcPath = `${this.#MATCHER_ROOT}/${this.#funcname}.js`;
         if (!existsSync(this.#funcPath)) {
+          let errmsg =
+            `NJINZ-105: Custom matcher for '${params}' not found at '${this.#funcPath}'!`;
           this.#funcPath = "";
-          throw new Error(
-            `NJINZ-105: Custom matcher for '${params}' not found at '${this.#funcPath}'!`,
-          );
+          throw new Error(errmsg);
         }
       }
     }
