@@ -1,0 +1,159 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$ref": "https://raw.githubusercontent.com/cawoodm/njinz/master/config.schema.json",
+  "definitions": {
+    "INJINZ": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "global": {
+          "type": "object",
+          "$ref": "#/definitions/Global"
+        },
+        "hosts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Host"
+          }
+        },
+        "ruleSets": {
+          "$ref": "#/definitions/RuleSets"
+        }
+      },
+      "required": [
+        "global",
+        "hosts",
+        "ruleSets"
+      ],
+      "title": "INJINZ"
+    },
+    "Global": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "refs": {
+          "type": "object",
+          "$ref": "#/definitions/Ref"
+        }
+      },
+      "required": [
+        "refs"
+      ],
+      "title": "Global"
+    },
+    "Ref": {
+      "type": "object",
+      "properties": {
+        "htdocs": {
+          "type": "string"
+        },
+        "errdocs": {
+          "type": "string"
+        },
+        "cache": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "htdocs",
+        "errdocs"
+      ],
+      "title": "Ref"
+    },
+    "Host": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "host": {
+          "type": "string",
+          "format": "uri",
+          "qt-uri-protocols": [
+            "http"
+          ]
+        },
+        "ruleSets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "host",
+        "ruleSets"
+      ],
+      "title": "Host"
+    },
+    "RuleSets": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "routes": {
+          "$ref": "#/definitions/Routes"
+        }
+      },
+      "required": [
+        "routes"
+      ],
+      "title": "RuleSets"
+    },
+    "Routes": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "type": "string"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Rule"
+          }
+        }
+      },
+      "required": [
+        "mode",
+        "rules"
+      ],
+      "title": "Routes"
+    },
+    "Rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "when": {
+          "type": "string"
+        },
+        "then": {
+          "$ref": "#/definitions/Then"
+        }
+      },
+      "required": [
+        "then",
+        "when"
+      ],
+      "title": "Rule"
+    },
+    "Then": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "static": {
+          "type": "string"
+        },
+        "proxy": {
+          "type": "string",
+          "format": "uri",
+          "qt-uri-protocols": [
+            "https"
+          ]
+        },
+        "serve": {
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "Then"
+    }
+  }
+}

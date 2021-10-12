@@ -1,3 +1,10 @@
+# yaml-language-server: $schema=./config.schema.json
+global:
+  refs:
+    errdocs: /etc/injinz/errdocs
+    htdocs: /etc/injinz/htdocs
+    cache: /etc/injinz/cache
+    foo: bar
 hosts:
   - host: 'http://localhost:8889'
     ruleSets:
@@ -8,9 +15,7 @@ ruleSets:
     rules:
       - when: /ping
         then:
-          static: |-
-            Pong!<br>
-            You gottit!
+          static: Pong!
       - when: 'regex::^/ui'
         then:
           static: UI!
@@ -20,3 +25,6 @@ ruleSets:
       - when: /
         then:
           proxy: 'https://github.com/asos-craigmorten/opine-http-proxy'
+      - when: /
+        then:
+          serve: $htdocs
