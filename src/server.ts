@@ -6,11 +6,14 @@ import {
 import { HandlerMode, VPort, VServer } from "./types.ts";
 import { Logger } from "./logger.ts";
 import { die, trace } from "./helpers.ts";
+import mapper from "./mapper.ts";
 
 export function runServer(njinz: VServer, logger: Logger): void {
   try {
     njinz.vports.forEach((vport: VPort) => {
-      vport.app.all("*", (req: Request, res: Response, next) => {
+      vport.app.all("*", (oreq: Request, ores: Response, next) => {
+        const req = mapper.opineRequestToInjinz(oreq);
+        const res = mapper.opineResponseToInjinz(ores);
         try {
           let vhost = njinz.vhosts.find((vh) => vh.host.port === vport.number);
           if (!vhost || !vhost.host) {
@@ -18,18 +21,17 @@ export function runServer(njinz: VServer, logger: Logger): void {
             return next();
           }
           logger.logStart(req);
-          let op = []; // "<h1>Hello World</h1>"];
-          //op.push("Port: " + vport.number);
-          //op.push("Host: " + vhost?.host?.origin);
+          let op = [];
           if (vhost && vhost.ruleSets) {
             //op.push("RuleSets: " + vhost?.ruleSets.length);
             for (let ruleSet of vhost?.ruleSets) {
               for (let rule of ruleSet.rules) {
                 if (!rule.when || rule.when.check(req) === true) {
                   if (rule.then.static) {
+                    // Should call something.static(req, res) here...
                     op.push(rule.then.static);
                   }
-                  // TODO: If mode==any, exit ruleSet!
+                  // TODO: Call handler(req, res, ores)
                   if (ruleSet.mode === HandlerMode.any) {
                     break;
                   }
@@ -37,7 +39,7 @@ export function runServer(njinz: VServer, logger: Logger): void {
               }
             }
           }
-          res.send(op.join(""));
+          ores.send(op.join(""));
           logger.logEnd(req, res);
         } catch (e) {
           trace(e);

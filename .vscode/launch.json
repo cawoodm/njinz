@@ -2,6 +2,17 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Attach",
+      "processId": "${command:PickProcess}",
+      "request": "attach",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "pwa-node",
+      "attachSimplePort": 9229,
+      "redirectOutput": false
+    },
+    {
       "name": "Debug Current",
       "program": "${file}",
       "cwd": "${workspaceFolder}",
@@ -37,7 +48,7 @@
       ],
       "args": [
         "-f",
-        "config2.json"
+        "config.yaml"
       ],
       "attachSimplePort": 9229,
       "redirectOutput": false
@@ -56,7 +67,6 @@
         "run",
         "--inspect",
         "--allow-all",
-        "-f config2.json"
       ],
       "attachSimplePort": 9229
     }

@@ -1,4 +1,4 @@
-import { Request } from "https://deno.land/x/opine@1.8.0/src/types.ts";
+import { IRequest as Request } from "./types.ts";
 import { existsSync } from "https://deno.land/std@0.110.0/fs/exists.ts";
 import { debug, trace } from "./helpers.ts";
 
@@ -9,37 +9,45 @@ export class Matcher {
   #object: string;
   #params: string;
   #MATCHER_ROOT: string = "etc/injinz/plugins/matchers";
-  constructor(params: string) {
-    // Parse <function?>:<object?>:<params>
-    // Parse <object?>:<params>
+  constructor(matcherExpression: string) {
+    // Parse <object?>:<function?>:<params>
+    // Parse <function?>:<params>
     // Parse <params>
-    let parms = params.split(":");
+    let parms = matcherExpression.split(":");
     if (parms.length === 0) {
-      throw new Error(`NJINZ-104: Invalid matcher '${params}'!`);
+      throw new Error(`NJINZ-104: Invalid matcher '${matcherExpression}'!`);
     }
     if (parms.length < 2) parms.splice(0, 0, "");
     if (parms.length < 3) parms.splice(0, 0, "");
 
-    this.#funcname = parms[0] ||= "startsWith";
-    this.#object = parms[1] ||= "req.path";
+    this.#object = parms[0] ||= "req.path";
+    this.#funcname = parms[1] ||= "startsWith";
     this.#params = parms[2];
-    // TODO: Support pseudo-regex
+    debug(this.#object, ":", this.#funcname, ":", this.#params);
+
     // TODO: Support array of params sep=|
     // TODO: Support hashmap of params sep=&
-    debug(this.#funcname, ":", this.#object, ":", this.#params);
     this.#function = (o: any) => o.toString().startsWith(this.#params);
     this.#funcPath = "";
     if (this.#funcname) {
       if (this.#funcname === "startsWith") {
-        // Standard matcher
-      } else if (this.#funcname === "regex") {
-        let params = new RegExp(this.#params);
-        this.#function = (o: any) => o.toString().match(params);
+        // startsWith: Standard prefix matcher
+      } else if (this.#funcname === "regex" || this.#funcname === "matches") {
+        // matches: Regular Expressions
+        let paramsRegEx = new RegExp(this.#params);
+        this.#function = (o: any) => o.toString().match(paramsRegEx);
+      } else if (this.#funcname === "like") {
+        // like: Wildcards - case-insensitive
+        let paramsRegEx = new RegExp(this.#params.replace(/\*/gi, ".*"));
+        this.#function = (o: any) => o.toString().match(paramsRegEx);
+      } else if (this.#funcname === "equals") {
+        // equals: Exact match
+        this.#function = (o: any) => o.toString() === this.#params;
       } else {
         this.#funcPath = `${this.#MATCHER_ROOT}/${this.#funcname}.js`;
         if (!existsSync(this.#funcPath)) {
           let errmsg =
-            `NJINZ-105: Custom matcher for '${params}' not found at '${this.#funcPath}'!`;
+            `NJINZ-105: Custom matcher for '${matcherExpression}' not found at '${this.#funcPath}'!`;
           this.#funcPath = "";
           throw new Error(errmsg);
         }

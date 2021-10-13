@@ -1,7 +1,4 @@
-import {
-  Request,
-  Response,
-} from "https://deno.land/x/opine@1.8.0/src/types.ts";
+import { IRequest as Request, IResponse as Response } from "./types.ts";
 export class Logger {
   constructor() {
   }

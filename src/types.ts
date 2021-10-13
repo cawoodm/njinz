@@ -49,3 +49,41 @@ export enum HandlerMode {
   all = 0,
   any = 1,
 }
+export interface IRequest {
+  accepts: string;
+  agent: string;
+  contentType: string;
+  contentLength: number;
+  hostname: string;
+  // Header Line 1
+  method: string;
+  protocol: string; // proto
+  secure: boolean;
+  ip: string;
+  originalUrl: string; // Fixed
+  // Dynamic Properties:
+  path: string;
+  query: IQuery;
+  querystring: string;
+  url: URL; // Parsed current URL
+  baseUrl: string; // http://hostname:port
+  body: string; // Need body parser => _parsedBody
+  headers: IHeaders;
+  vars: IVars;
+}
+export interface IResponse {
+  status: number;
+  statusText: string;
+  body: string;
+  headers: IHeaders;
+  written: boolean;
+}
+export interface IHeaders {
+  [key: string]: string;
+}
+export interface IQuery {
+  [key: string]: string;
+}
+export interface IVars {
+  [key: string]: string;
+}

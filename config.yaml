@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=./config.schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/cawoodm/njinz/master/config.schema.json
 global:
   refs:
     errdocs: /etc/injinz/errdocs
@@ -12,13 +12,13 @@ ruleSets:
   routes:
     mode: any
     rules:
-      - when: 'equals::/pingo'
+      - when: equals:/pingo
         then:
           static: Pongo!
       - when: /ping
         then:
           static: Pong!
-      - when: 'regex::^/ui'
+      - when: 'matches:^/ui'
         then:
           static: UI!
       - when: /app1
