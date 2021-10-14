@@ -8,7 +8,7 @@ export class Logger {
   logEnd(req: Request, res: Response) {
     console.log("\t", "→", res.status, req.path);
   }
-  logError(req: Request, msg: String) {
-    console.error(req.url, msg);
+  logError(url: string, msg: String) {
+    console.error(url, msg);
   }
 }

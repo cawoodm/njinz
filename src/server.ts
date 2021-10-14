@@ -12,38 +12,50 @@ export function runServer(njinz: VServer, logger: Logger): void {
   try {
     njinz.vports.forEach((vport: VPort) => {
       vport.app.all("*", (oreq: Request, ores: Response, next) => {
-        const req = mapper.opineRequestToInjinz(oreq);
-        const res = mapper.opineResponseToInjinz(ores);
         try {
           let vhost = njinz.vhosts.find((vh) => vh.host.port === vport.number);
+          // TODO Match HOST and PORT!
           if (!vhost || !vhost.host) {
-            logger.logError(req, "Unknown Virtual Host");
+            logger.logError(oreq.originalUrl, "Unknown Virtual Host");
             return next();
           }
+          let baseUrl = oreq.protocol + "://" + oreq.hostname +
+            ":" + vport.number.toString();
+          let originalUrl = new URL(oreq.originalUrl, baseUrl);
+          const req = mapper.opineRequestToInjinz(oreq, originalUrl);
+          const res = mapper.opineResponseToInjinz(ores);
           logger.logStart(req);
-          let op = [];
           if (vhost && vhost.ruleSets) {
-            //op.push("RuleSets: " + vhost?.ruleSets.length);
             for (let ruleSet of vhost?.ruleSets) {
               for (let rule of ruleSet.rules) {
                 if (!rule.when || rule.when.check(req) === true) {
-                  if (rule.then.static) {
-                    // Should call something.static(req, res) here...
-                    op.push(rule.then.static);
-                  }
-                  // TODO: Call handler(req, res, ores)
-                  if (ruleSet.mode === HandlerMode.any) {
-                    break;
+                  try {
+                    if (typeof rule?.then?.process === "function") {
+                      rule?.then?.process(req, res, oreq, ores);
+                    }
+                    if (ruleSet.mode === HandlerMode.any) {
+                      break;
+                    }
+                    if (ores.written) {
+                      // Response was handled, exit ruleSet?
+                    }
+                  } catch (e) {
+                    // Handler may throw an Error
+                    // OR
+                    // Decline to process => next()
                   }
                 }
               }
             }
           }
-          ores.send(op.join(""));
+          if (!ores.written) {
+            console.warn("No handler wrote a response!", req.originalUrl);
+          }
           logger.logEnd(req, res);
         } catch (e) {
           trace(e);
           console.error(e);
+          ores.setStatus(500).send(<Error> e.trace);
         }
       });
       let portNumber: number =

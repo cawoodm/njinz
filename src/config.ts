@@ -5,6 +5,9 @@ import { opine } from "https://deno.land/x/opine@1.8.0/mod.ts";
 import type { Config, Host, HostDetail, Rule } from "./types.ts";
 import type { VRule, VRuleSet, VServer } from "./types.ts";
 import { Matcher } from "./matcher.ts";
+import IHandler from "./handler.ts";
+import StaticHandler from "./handlers/staticHandler.ts";
+import FixedHandler from "./handlers/fixedHandler.ts";
 import { debug, trace } from "./helpers.ts";
 import { parse as parseYAML } from "https://deno.land/std@0.110.0/encoding/yaml.ts";
 
@@ -41,13 +44,22 @@ export async function loadServerConfig(args: string[]): Promise<VServer> {
         ruleSets: extractRuleSets(config, host),
       });
     });
-    // Initialize all rules
+    // Initialize Mappers for all rules (when)
     await Promise.all(server.vhosts
       .map((vhost) =>
         vhost.ruleSets
           .map((ruleSet) =>
             ruleSet.rules
               .map((rule) => rule.when?.init)
+          )
+      ));
+    // Initialize Handlers for all actions (then)
+    await Promise.all(server.vhosts
+      .map((vhost) =>
+        vhost.ruleSets
+          .map((ruleSet) =>
+            ruleSet.rules
+              .map((rule) => rule.then?.init)
           )
       ));
     return server;
@@ -89,8 +101,28 @@ function extractRuleSets(config: Config, host: Host): VRuleSet[] {
 function extractVRules(rules: Rule[]): VRule[] {
   return rules.map((rule) => ({
     when: rule.when ? new Matcher(rule.when) : undefined,
-    then: rule.then,
+    then: rule.then ? HandlerFactory(rule.then) : undefined,
   }));
+}
+function HandlerFactory(options: any): IHandler {
+  let keys = Object.keys(options);
+  if (keys.length === 0) throw new Error("Invalid Handler!");
+  let opt: { id: string; params: string } = { id: "", params: "" };
+  if (keys.length === 1) {
+    opt.id = keys[0];
+    opt.params = options[keys[0]];
+    // TODO: Support sub-object (root:...)
+  }
+  if (opt.id === "fixed") {
+    return new FixedHandler({
+      content: opt.params,
+    });
+  } else if (opt.id === "static") {
+    return new StaticHandler({
+      root: opt.params,
+    });
+  }
+  throw new Error(`INJINZ-110: Unknown handler '${options.id}'`);
 }
 function URL2VHost(url: string): HostDetail {
   try {

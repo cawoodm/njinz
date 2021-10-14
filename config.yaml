@@ -14,16 +14,17 @@ ruleSets:
     rules:
       - when: equals:/pingo
         then:
-          static: Pongo!
+          fixed: html:Pongo!
       - when: /ping
         then:
-          static: Pong!
+          fixed: html:Pong!
       - when: 'matches:^/ui'
         then:
-          static: UI!
-      - when: /app1
-        then:
-          proxy: 'https://github.com/asos-craigmorten/opine-http-proxy'
+          fixed: html:UI!
+      # - when: /app1
+      #   then:
+      #     proxy: 'https://github.com/asos-craigmorten/opine-http-proxy'
       - when: /
         then:
-          serve: $htdocs
+          static: ./etc/injinz/htdocs
+          #TODO: $htdocs

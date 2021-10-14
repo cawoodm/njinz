@@ -1,5 +1,7 @@
 import { Application } from "https://deno.land/x/opine@1.8.0/src/types.ts";
 import { Matcher } from "./matcher.ts";
+import IHandler from "./handler.ts";
+
 export interface Config {
   hosts: Host[];
   ruleSets: RuleSetsMap;
@@ -24,8 +26,8 @@ export interface Rule {
   then: any;
 }
 export interface VRule {
-  when: Matcher | undefined;
-  then: any;
+  when?: Matcher | undefined;
+  then?: IHandler | undefined;
 }
 export interface Host {
   host: string;

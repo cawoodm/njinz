@@ -4,12 +4,18 @@ import {
 } from "https://deno.land/x/opine@1.8.0/src/types.ts";
 import { IHeaders, IRequest, IResponse } from "./types.ts";
 const mapper = {
-  opineRequestToInjinz(req: Request): IRequest {
+  opineRequestToInjinz(req: Request, url: URL): IRequest {
     let headers: IHeaders = {};
     for (let [key, value] of req.headers.entries()) {
       if (value) headers[key] = value || "";
     }
-    let url = new URL(req.url);
+    let portSuffix = "";
+    if (url.protocol === "http" && url.port != "80") {
+      portSuffix = ":" + url.port;
+    }
+    if (url.protocol === "https" && url.port != "443") {
+      portSuffix = ":" + url.port;
+    }
     return {
       accepts: req.headers.get("Accept") || "",
       agent: req.headers.get("User-Agent") || "",
@@ -21,14 +27,14 @@ const mapper = {
       protocol: req.protocol, // proto
       secure: req.secure, // proto
       ip: req.ip, // ips?
-      originalUrl: req.originalUrl, // Fixed
+      originalUrl: url.toString(), // Fixed
       // Dynamic Properties:
       path: req.path,
       query: req.query,
       querystring: url.search,
       url: url, // Parsed current URL
-      baseUrl: req.baseUrl, // http://hostname:port
-      body: req.body, // Need body parser => _parsedBody
+      baseUrl: url.protocol + "://" + url.hostname + portSuffix, // http://hostname:port
+      body: req.body,
       headers,
       vars: { foo: "bar" },
     };
