@@ -11,16 +11,25 @@ const chalk = {
   red: (msg: string) => "\x1b[31m" + msg + "\x1b[0m",
   green: (msg: string) => "\x1b[32m" + msg + "\x1b[0m",
 };
+let it = Deno.test;
 
-Deno.test("Exact prefix", async () => expect("/ping", toReturn, "Pong!"));
-Deno.test("Deep prefix", async () => expect("/ping/foo", toReturn, "Pong!"));
-Deno.test("Exact equals", async () => expect("/pingo", toReturn, "Pongo!"));
-Deno.test("Reqular expression", async () => expect("/ui/foo", toReturn, "UI!"));
-// TODO: Expect /ui/foo to deliver "UI!"
-// TODO: Expect / to deliver *Welcome!*
-// TODO: Expect /pingo/foo to deliver 404
+it("Exact prefix", should("/ping", toReturn, "Pong!"));
+it("Deep prefix", should("/ping/foo", toReturn, "Pong!"));
+it("Exact equals", should("/pingo", toReturn, "Pongo!"));
+it("Reqular expression", should("/ui/foo", toReturn, "UI!"));
+it("Fixed welcome", should("/welcome", toReturn, "<h1>Welcome.*<h1>"));
+it("Serve index", should("/static/foo/", toReturn, ".*Foo!.*"));
+it("404", should("/favicon.ico", 404, ""));
 
-async function expect(
+function should(
+  path: string,
+  status: number,
+  content: string,
+) {
+  return () => go(path, status, content);
+}
+
+async function go(
   path: string,
   status: number,
   content: string,

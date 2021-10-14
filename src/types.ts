@@ -1,6 +1,6 @@
 import { Application } from "https://deno.land/x/opine@1.8.0/src/types.ts";
 import { Matcher } from "./matcher.ts";
-import IHandler from "./handler.ts";
+import type { IHandler } from "./handler.ts";
 
 export interface Config {
   hosts: Host[];
@@ -18,8 +18,9 @@ export interface RuleSetConfig {
   rules: Rule[];
 }
 export interface VRuleSet {
-  mode?: HandlerMode;
+  id: string;
   rules: VRule[];
+  mode?: HandlerMode;
 }
 export interface Rule {
   when: string;

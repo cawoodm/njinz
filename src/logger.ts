@@ -5,8 +5,8 @@ export class Logger {
   logStart(req: Request) {
     console.log(req.method, req.originalUrl);
   }
-  logEnd(req: Request, res: Response) {
-    console.log("\t", "→", res.status, req.path);
+  logEnd(status: number, str: string) {
+    console.log("\t", "→", status, str);
   }
   logError(url: string, msg: String) {
     console.error(url, msg);

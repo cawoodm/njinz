@@ -14,17 +14,25 @@ ruleSets:
     rules:
       - when: equals:/pingo
         then:
-          fixed: html:Pongo!
+          send: html:Pongo!
       - when: /ping
         then:
-          fixed: html:Pong!
+          send: Pong!
       - when: 'matches:^/ui'
         then:
-          fixed: html:UI!
+          send: text:UI!
+      - when: 'matches:^/static'
+        then:
+          serve:
+            root: ./etc/injinz/htdocs
+            index: index.html
       # - when: /app1
       #   then:
       #     proxy: 'https://github.com/asos-craigmorten/opine-http-proxy'
+      - when: /welcome
+        then:
+          send: html:<h1>Welcome to INJIN-Z<h1>
       - when: /
         then:
-          static: ./etc/injinz/htdocs
+          serve: ./etc/injinz/htdocs
           #TODO: $htdocs

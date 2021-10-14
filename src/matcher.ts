@@ -61,9 +61,9 @@ export class Matcher {
       this.#function = (obj: any) => checker(obj, this.#params);
     }
   }
-  check(req: Request): boolean {
+  check(req: Request): any {
     if (this.#function) {
-      return !!this.#function(eval(this.#object));
+      return this.#function(eval(this.#object));
     }
     throw new Error("NJINZ-106: No matcher function available!");
   }
