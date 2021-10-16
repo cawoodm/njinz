@@ -25,23 +25,41 @@
         "hosts",
         "ruleSets"
       ],
-      "title": "INJINZ"
+      "title": "INJIN-Z Webserver Configuration"
     },
     "Global": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "dirs": {
+          "type": "object",
+          "$ref": "#/definitions/Ref"
+        },
+        "files": {
+          "type": "object",
+          "$ref": "#/definitions/Ref"
+        },
         "refs": {
           "type": "object",
           "$ref": "#/definitions/Ref"
+        },
+        "env": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "required": [
         "refs"
       ],
-      "title": "Global"
+      "title": "Globals"
     },
     "Ref": {
+      "type": "object",
+      "title": "Reference"
+    },
+    "Dir": {
       "type": "object",
       "properties": {
         "htdocs": {
@@ -58,7 +76,7 @@
         "htdocs",
         "errdocs"
       ],
-      "title": "Ref"
+      "title": "Directory"
     },
     "Host": {
       "type": "object",
