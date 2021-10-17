@@ -4,6 +4,8 @@ import {
   fail,
 } from "https://deno.land/std@0.110.0/testing/asserts.ts";
 // import chalk from "https://deno.land/x/chalk_deno@v4.1.1-deno/source/index.js";
+// @deno-types="https://deno.land/x/chalk_deno@v4.1.1-deno/index.d.ts"
+// import chalk from "https://deno.land/x/chalk_deno@v4.1.1-deno/source/index.js";
 
 const PORT = parseInt(Deno.env.get("DEBUG_PORT_OVERRIDE") || "0", 10) || 8889;
 const toReturn = 200;

@@ -3,12 +3,28 @@ import { Matcher } from "./matcher.ts";
 import type { IHandler } from "./handler.ts";
 
 export interface Config {
+  global: CGlobal;
   hosts: Host[];
   ruleSets: RuleSetsMap;
 }
 export interface VServer {
+  global: Global;
   vports: VPort[];
   vhosts: VHost[];
+}
+export interface Global {
+  dirs: IVars,
+  files: IVars,
+  refs: IVars,
+  plugins: string[],
+  env: IVars,
+}
+export interface CGlobal {
+  dirs: IVars,
+  files: IVars,
+  refs?: IVars,
+  plugins?: string[],
+  env?: string[],
 }
 export interface RuleSetsMap {
   [key: string]: RuleSetConfig;

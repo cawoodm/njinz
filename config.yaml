@@ -10,6 +10,9 @@ global:
     - HOSTNAME
   plugins:
     - injinz
+  refs:
+    siteName: INJIN-Z
+    maxAge: 1d
 hosts:
   - host: 'http://localhost:8889'
     ruleSets:
@@ -18,16 +21,16 @@ ruleSets:
   routes:
     mode: any
     rules:
-      - when: equals:/pingo
+      - when: equals /pingo
         then:
-          send: html:Pongo!
+          send: html Pongo!
       - when: /ping
         then:
           send: Pong!
-      - when: 'matches:^/ui'
+      - when: 'matches ^/ui'
         then:
-          send: text:UI!
-      - when: 'matches:^/static'
+          send: text UI!
+      - when: 'matches ^/static'
         then:
           serve:
             root: ./etc/injinz/htdocs
@@ -37,7 +40,7 @@ ruleSets:
       #     proxy: 'https://github.com/asos-craigmorten/opine-http-proxy'
       - when: /welcome
         then:
-          send: html:<h1>Welcome to INJIN-Z<h1>
+          send: html:<h1>Welcome to INJIN-Z!<h1>
       - when: /
         then:
           serve: ./etc/injinz/htdocs

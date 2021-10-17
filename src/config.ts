@@ -2,7 +2,7 @@
 import { parse } from "https://deno.land/std@0.110.0/flags/mod.ts";
 import { urlParse } from "https://deno.land/x/url_parse@1.0.0/mod.ts";
 import { opine } from "https://deno.land/x/opine@1.8.0/mod.ts";
-import type { Config, Host, HostDetail, Rule } from "./types.ts";
+import type { Config, Host, HostDetail, Rule, IVars } from "./types.ts";
 import type { VRule, VRuleSet, VServer } from "./types.ts";
 import { Matcher } from "./matcher.ts";
 import { HandlerFactory } from "./handler.ts";
@@ -25,6 +25,13 @@ export async function loadServerConfig(args: string[]): Promise<VServer> {
   }
   try {
     const server: VServer = {
+      global: {
+        dirs: config.global.dirs,
+        files: config.global.files,
+        refs: config.global.refs || {},
+        plugins: config.global.plugins || [],
+        env: <IVars>Object.fromEntries((config.global.env || []).map(e => [e, Deno.env.get(e)]))
+      },
       vports: [],
       vhosts: [],
     };

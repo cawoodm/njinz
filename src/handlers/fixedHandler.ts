@@ -5,6 +5,7 @@ import {
 } from "https://deno.land/x/opine@1.8.0/src/types.ts";
 import { Handler } from "https://deno.land/x/opine@1.8.0/src/types.ts";
 import type { IHandler, XHandler } from "../handler.ts";
+// import refs from "../refs.ts";
 
 export default class StaticHandler implements IHandler {
   id = "fixed";
@@ -19,6 +20,7 @@ export default class StaticHandler implements IHandler {
       params: any,
     ) => {
       res.type(opt.contentType);
+      //let content = refs.format(glob, opts.content);
       res.setStatus(200).send(opt.content);
     };
   }
@@ -53,12 +55,12 @@ function parseOptions(options: any): Options {
   };
   if (typeof options === "string") {
     result.content = <string> options;
-    result.contentType = "text/plain";
     let arr = result.content.split(":");
     if (arr.length > 1) {
       result.contentType = arr[0];
       result.content = result.content.substring(result.contentType.length + 1);
-      result.contentType = contentTypes[result.contentType];
+      result.contentType = contentTypes[result.contentType] ||
+        result.contentType;
     }
   } else {
     result = {

@@ -13,7 +13,7 @@ export class Matcher {
     // Parse <object?>:<function?>:<params>
     // Parse <function?>:<params>
     // Parse <params>
-    let parms = matcherExpression.split(":");
+    let parms = matcherExpression.split(" ");
     if (parms.length === 0) {
       throw new Error(`NJINZ-104: Invalid matcher '${matcherExpression}'!`);
     }
@@ -32,15 +32,15 @@ export class Matcher {
     if (this.#funcname) {
       if (this.#funcname === "startsWith") {
         // startsWith: Standard prefix matcher
-      } else if (this.#funcname === "regex" || this.#funcname === "matches") {
+      } else if (this.#funcname === "matches" || this.#funcname === "~") {
         // matches: Regular Expressions
         let paramsRegEx = new RegExp(this.#params);
         this.#function = (o: any) => o.toString().match(paramsRegEx);
-      } else if (this.#funcname === "like") {
+      } else if (this.#funcname === "like" || this.#funcname === "=") {
         // like: Wildcards - case-insensitive
         let paramsRegEx = new RegExp(this.#params.replace(/\*/gi, ".*"));
         this.#function = (o: any) => o.toString().match(paramsRegEx);
-      } else if (this.#funcname === "equals") {
+      } else if (this.#funcname === "equals" || this.#funcname === "==") {
         // equals: Exact match
         this.#function = (o: any) => o.toString() === this.#params;
       } else {

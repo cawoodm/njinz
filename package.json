@@ -4,7 +4,7 @@
   "scripts": {
     "start": "deno run -A src/webserver.ts -f config.yaml",
     "dev": "denon run -A src/webserver.ts -f config.yaml",
-    "lint": "eslint '**/*.ts'",
+    "lint": "deno fmt '**/*.ts'",
     "check-types": "tsc --noEmit",
     "test": "deno -- tests.ts",
     "testf": "deno test -A tests/functional.test.ts"
