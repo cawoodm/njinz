@@ -7,10 +7,6 @@ import {
 
 const PORT = parseInt(Deno.env.get("DEBUG_PORT_OVERRIDE") || "0", 10) || 8889;
 const toReturn = 200;
-const chalk = {
-  red: (msg: string) => "\x1b[31m" + msg + "\x1b[0m",
-  green: (msg: string) => "\x1b[32m" + msg + "\x1b[0m",
-};
 let it = Deno.test;
 
 it("Exact prefix", should("/ping", toReturn, "Pong!"));
@@ -20,21 +16,21 @@ it("Reqular expression", should("/ui/foo", toReturn, "UI!"));
 it("Fixed welcome", should("/welcome", toReturn, "<h1>Welcome.*<h1>"));
 it("Serve index", should("/static/foo/", toReturn, ".*Foo!.*"));
 it("404", should("/favicon.ico", 404, ""));
+it("Serve main index", should("/", toReturn, ".*<h1>INJIN-Z</h1>.*"));
 
 function should(
   path: string,
   status: number,
   content: string,
 ) {
-  return () => go(path, status, content);
+  return () => expect(path, status, content);
 }
 
-async function go(
+async function expect(
   path: string,
   status: number,
   content: string,
 ) {
-  console.log(2);
   let res, text;
   try {
     res = await fetch(`http://localhost:${PORT}${path}`);
