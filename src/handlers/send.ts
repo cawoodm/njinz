@@ -264,7 +264,7 @@ export function sendError(res: Response, error?: any): void {
     res.set(error.headers);
   }
 
-  if (!error) {
+  if (!error || error.name === 'NotFound') {
     throw createError(
       create404Error(),
       { code: "ENOENT" },
