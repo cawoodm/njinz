@@ -1,6 +1,7 @@
 {
+  "title": "INJIN-Z Server Config",
   "$schema": "http://json-schema.org/draft-06/schema#",
-  "$ref": "https://raw.githubusercontent.com/cawoodm/njinz/master/config.schema.json",
+  "type": "object",
   "definitions": {
     "INJINZ": {
       "type": "object",
@@ -33,7 +34,7 @@
       "properties": {
         "dirs": {
           "type": "object",
-          "$ref": "#/definitions/Ref"
+          "$ref": "#/definitions/Dir"
         },
         "files": {
           "type": "object",
@@ -46,12 +47,21 @@
         "env": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "string",
+            "pattern": "[A-Z_]+"
+          }
+        },
+        "plugins": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "\\w+"
           }
         }
       },
       "required": [
-        "refs"
+        "dirs",
+        "files"
       ],
       "title": "Globals"
     },
@@ -105,17 +115,14 @@
     "RuleSets": {
       "type": "object",
       "additionalProperties": false,
-      "properties": {
-        "routes": {
-          "$ref": "#/definitions/Routes"
+      "patternProperties": {
+        "^\\w+$": {
+          "$ref": "#/definitions/RuleSet"
         }
       },
-      "required": [
-        "routes"
-      ],
       "title": "RuleSets"
     },
-    "Routes": {
+    "RuleSet": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -130,10 +137,9 @@
         }
       },
       "required": [
-        "mode",
         "rules"
       ],
-      "title": "Routes"
+      "title": "RuleSet"
     },
     "Rule": {
       "type": "object",
@@ -142,36 +148,25 @@
         "when": {
           "type": "string"
         },
+        "else": {
+          "type": "string"
+        },
         "then": {
-          "$ref": "#/definitions/Then"
+          "type": [
+            "string",
+            "object"
+          ]
         }
       },
       "required": [
-        "then",
-        "when"
+        "then"
       ],
-      "title": "Rule"
-    },
-    "Then": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "static": {
-          "type": "string"
-        },
-        "proxy": {
-          "type": "string",
-          "format": "uri",
-          "qt-uri-protocols": [
-            "https"
-          ]
-        },
-        "serve": {
-          "type": "string"
-        }
-      },
-      "required": [],
-      "title": "Then"
+      "title": "Rule: Handler with optional Matcher"
     }
-  }
+  },
+  "oneOf": [
+    {
+      "$ref": "#/definitions/INJINZ"
+    }
+  ]
 }

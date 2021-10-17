@@ -1,9 +1,15 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/cawoodm/njinz/master/config.schema.json
+# yaml-language-server: $schema=./config.schema.json
 global:
-  refs:
-    errdocs: /etc/injinz/errdocs
+  dirs:
     htdocs: /etc/injinz/htdocs
+    errdocs: /etc/injinz/errdocs
     cache: /etc/injinz/cache
+  files:
+    mimes: /etc/injinz/mimes.yaml
+  env:
+    - HOSTNAME
+  plugins:
+    - injinz
 hosts:
   - host: 'http://localhost:8889'
     ruleSets:
